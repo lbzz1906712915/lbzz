@@ -301,31 +301,42 @@
         // 绘制物品
         function drawItems() {
             items.forEach(item => {
-                if (!item.caught) {
+                if (!item.caught || (item.caught && item === gameState.caughtItem)) {
                     ctx.save();
                     ctx.fillStyle = item.color;
+                    
+                    let drawX = item.x;
+                    let drawY = item.y;
+                    
+                    // 如果被抓取，物体跟随钩子
+                    if (item.caught && item === gameState.caughtItem) {
+                        drawX = hook.x;
+                        drawY = hook.y + item.size/2 + 10; // 物体显示在钩子下方
+                    }
                     
                     if (item.type === 'diamond') {
                         // 绘制钻石
                         ctx.beginPath();
-                        ctx.moveTo(item.x, item.y - item.size/2);
-                        ctx.lineTo(item.x + item.size/2, item.y);
-                        ctx.lineTo(item.x, item.y + item.size/2);
-                        ctx.lineTo(item.x - item.size/2, item.y);
+                        ctx.moveTo(drawX, drawY - item.size/2);
+                        ctx.lineTo(drawX + item.size/2, drawY);
+                        ctx.lineTo(drawX, drawY + item.size/2);
+                        ctx.lineTo(drawX - item.size/2, drawY);
                         ctx.closePath();
                         ctx.fill();
                     } else {
                         // 绘制圆形物品
                         ctx.beginPath();
-                        ctx.arc(item.x, item.y, item.size/2, 0, Math.PI * 2);
+                        ctx.arc(drawX, drawY, item.size/2, 0, Math.PI * 2);
                         ctx.fill();
                     }
                     
-                    // 显示价值
-                    ctx.fillStyle = 'white';
-                    ctx.font = '12px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('$' + item.value, item.x, item.y);
+                    // 只为未被抓取的物品显示价值
+                    if (!item.caught) {
+                        ctx.fillStyle = 'white';
+                        ctx.font = '12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('$' + item.value, item.x, item.y);
+                    }
                     
                     ctx.restore();
                 }
@@ -473,11 +484,6 @@
                     hook.speed / gameState.caughtItem.weight : hook.speed;
                 
                 hook.currentLength -= retractSpeed;
-                
-                if (gameState.caughtItem) {
-                    gameState.caughtItem.x = hook.x;
-                    gameState.caughtItem.y = hook.y;
-                }
                 
                 if (hook.currentLength <= gameState.hookLength) {
                     if (gameState.caughtItem) {
