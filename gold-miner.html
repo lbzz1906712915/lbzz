@@ -67,6 +67,104 @@
             background: #87CEEB;
             display: block;
             margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+            touch-action: none;
+        }
+        
+        .hook-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2em;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 0 10px;
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            vertical-align: middle;
+        }
+        
+        .hook-button:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        .hook-button:active {
+            transform: scale(0.95);
+            background: #21618c;
+        }
+        
+        .hook-button.pressed {
+            background: #e74c3c;
+            transform: scale(0.9);
+        }
+        
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 10px;
+                margin: 10px;
+            }
+            
+            .game-header h1 {
+                font-size: 1.8em;
+            }
+            
+            .game-stats {
+                font-size: 0.9em;
+            }
+            
+            .stat {
+                padding: 8px 15px;
+                min-width: 80px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 1em;
+                margin: 5px;
+            }
+            
+            canvas {
+                border-width: 2px;
+            }
+            
+            .hook-button {
+                width: 50px;
+                height: 50px;
+                padding: 10px;
+                margin: 0 5px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-header h1 {
+                font-size: 1.5em;
+            }
+            
+            .game-stats {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .stat {
+                min-width: 70px;
+                padding: 5px 10px;
+            }
+            
+            .hook-button {
+                width: 45px;
+                height: 45px;
+                padding: 8px;
+                margin: 0 3px;
+            }
         }
 
         .game-controls {
@@ -151,10 +249,11 @@
         <div class="game-controls">
             <button class="btn" id="startBtn">开始游戏</button>
             <button class="btn" id="pauseBtn">暂停</button>
+            <button class="hook-button" id="hookBtn">🎣</button>
         </div>
         
         <div class="instructions">
-            <p>按空格键发射钩子 | 抓取金块和钻石获得分数 | 避开石头</p>
+            <p>按空格键或点击下方按钮发射钩子 | 抓取金块和钻石获得分数 | 避开石头</p>
         </div>
     </div>
 
@@ -172,11 +271,11 @@
             timeLeft: 60,
             hookAngle: 0,
             hookDirection: 1,
-            hookSpeed: 2,
+            hookSpeed: 1.5,
             hookLength: 50,
             hookExtending: false,
             hookRetracting: false,
-            hookMaxExtension: 400,
+            hookMaxExtension: 550,
             caughtItem: null
         };
         
@@ -194,7 +293,7 @@
             y: miner.y + miner.height / 2,
             width: 20,
             height: 20,
-            speed: 5,
+            speed: 3,
             currentLength: gameState.hookLength
         };
         
@@ -207,13 +306,16 @@
         // 分数弹出动画
         let scorePopups = [];
         
+        // 抓取特效
+        let catchEffects = [];
+        
         // 物品类型
         const itemTypes = {
-            gold_small: { value: 50, size: 30, color: '#FFD700', weight: 1 },
-            gold_medium: { value: 100, size: 45, color: '#FFA500', weight: 2 },
-            gold_large: { value: 200, size: 60, color: '#FF8C00', weight: 3 },
-            diamond: { value: 300, size: 25, color: '#00FFFF', weight: 1 },
-            rock: { value: 20, size: 50, color: '#808080', weight: 4 }
+            gold_small: { value: 50, size: 30, color: '#FFD700', weight: 0.6 },
+            gold_medium: { value: 100, size: 45, color: '#FFA500', weight: 0.9 },
+            gold_large: { value: 200, size: 60, color: '#FF8C00', weight: 1.2 },
+            diamond: { value: 300, size: 25, color: '#00FFFF', weight: 0.5 },
+            rock: { value: 20, size: 50, color: '#808080', weight: 2.5 }
         };
         
         // 初始化游戏物品
@@ -277,23 +379,25 @@
             ctx.lineTo(endX, endY);
             ctx.stroke();
             
-            // 绘制钩子
+            // 绘制钩子（只有当没有抓取物品时才显示）
             hook.x = endX;
             hook.y = endY;
             
-            ctx.fillStyle = '#696969';
-            ctx.beginPath();
-            ctx.arc(hook.x, hook.y, hook.width/2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 钩子尖端
-            ctx.strokeStyle = '#696969';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(hook.x - 10, hook.y + 5);
-            ctx.lineTo(hook.x, hook.y);
-            ctx.lineTo(hook.x + 10, hook.y + 5);
-            ctx.stroke();
+            if (!gameState.caughtItem) {
+                ctx.fillStyle = '#696969';
+                ctx.beginPath();
+                ctx.arc(hook.x, hook.y, hook.width/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 钩子尖端
+                ctx.strokeStyle = '#696969';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(hook.x - 10, hook.y + 5);
+                ctx.lineTo(hook.x, hook.y);
+                ctx.lineTo(hook.x + 10, hook.y + 5);
+                ctx.stroke();
+            }
             
             ctx.restore();
         }
@@ -308,10 +412,10 @@
                     let drawX = item.x;
                     let drawY = item.y;
                     
-                    // 如果被抓取，物体跟随钩子
+                    // 如果被抓取，物品直接覆盖钩子位置
                     if (item.caught && item === gameState.caughtItem) {
                         drawX = hook.x;
-                        drawY = hook.y + item.size/2 + 10; // 物体显示在钩子下方
+                        drawY = hook.y;
                     }
                     
                     if (item.type === 'diamond') {
@@ -368,6 +472,62 @@
                 value: value,
                 life: 1.0,
                 vy: -2
+            });
+        }
+        
+        // 创建抓取特效
+        function createCatchEffect() {
+            catchEffects.push({
+                life: 1.0,
+                pulsePhase: 0
+            });
+        }
+        
+        // 更新抓取特效
+        function updateCatchEffects() {
+            catchEffects = catchEffects.filter(effect => {
+                effect.life -= 0.02;
+                effect.pulsePhase += 0.2;
+                return effect.life > 0;
+            });
+        }
+        
+        // 绘制抓取特效
+        function drawCatchEffects() {
+            catchEffects.forEach(effect => {
+                if (gameState.caughtItem) {
+                    ctx.save();
+                    
+                    // 连线闪烁效果
+                    const pulseIntensity = (Math.sin(effect.pulsePhase) + 1) / 2;
+                    ctx.strokeStyle = `rgba(255, 215, 0, ${effect.life * pulseIntensity})`;
+                    ctx.lineWidth = 3 + pulseIntensity * 2;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#FFD700';
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(miner.x, miner.y + miner.height/2);
+                    ctx.lineTo(hook.x, hook.y);
+                    ctx.stroke();
+                    
+                    // 物品旋转效果
+                    ctx.translate(hook.x, hook.y);
+                    ctx.rotate(effect.pulsePhase * 0.5);
+                    ctx.translate(-hook.x, -hook.y);
+                    
+                    // 物品光晕效果
+                    const gradient = ctx.createRadialGradient(hook.x, hook.y, 0, hook.x, hook.y, gameState.caughtItem.size);
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${effect.life * 0.3})`);
+                    gradient.addColorStop(0.5, `rgba(255, 215, 0, ${effect.life * 0.2})`);
+                    gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(hook.x, hook.y, gameState.caughtItem.size * 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.restore();
+                }
             });
         }
         
@@ -461,6 +621,7 @@
                             // 添加捕获特效
                             createParticles(item.x, item.y, item.color, 15);
                             createScorePopup(item.x, item.y - 20, item.value);
+                            createCatchEffect();
                             
                             break;
                         }
@@ -516,6 +677,7 @@
             checkCollision();
             updateParticles();
             updateScorePopups();
+            updateCatchEffects();
             
             // 检查关卡完成
             if (gameState.score >= gameState.targetScore) {
@@ -536,8 +698,15 @@
             drawItems();
             drawMiner();
             drawHookLine();
+            drawCatchEffects();
             drawParticles();
             drawScorePopups();
+            
+            // 如果游戏结束，绘制游戏结束画面
+            if (gameState.isGameOver) {
+                drawGameOverScreen();
+                return;
+            }
             
             // 绘制暂停提示
             if (gameState.isPaused) {
@@ -569,7 +738,11 @@
                 document.getElementById('time').textContent = gameState.timeLeft;
                 
                 if (gameState.timeLeft <= 0) {
-                    gameOver();
+                    // 确保游戏结束逻辑正确执行
+                    if (!gameState.isGameOver) {
+                        gameState.isGameOver = true;
+                        gameOver();
+                    }
                 }
             }
         }
@@ -578,8 +751,8 @@
         function levelUp() {
             gameState.level++;
             gameState.targetScore = 500 * gameState.level;
-            gameState.timeLeft = 60 + gameState.level * 10;
-            gameState.hookSpeed = 2 + gameState.level * 0.5;
+            gameState.timeLeft = 60; // 每关固定1分钟
+            gameState.hookSpeed = 1.5 + gameState.level * 0.3;
             
             document.getElementById('level').textContent = gameState.level;
             document.getElementById('target').textContent = gameState.targetScore;
@@ -591,18 +764,92 @@
         // 游戏结束
         function gameOver() {
             gameState.isRunning = false;
+            gameState.isGameOver = true;
             
+            // 清除之前的点击事件
+            canvas.onclick = null;
+            
+            // 强制绘制游戏结束画面
+            drawGameOverScreen();
+        }
+        
+        // 绘制游戏结束画面
+        function drawGameOverScreen() {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             ctx.fillStyle = 'white';
             ctx.font = '48px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('游戏结束', canvas.width/2, canvas.height/2 - 50);
+            
+            // 判断是否达标
+            if (gameState.score >= gameState.targetScore) {
+                ctx.fillStyle = '#2ecc71';
+                ctx.fillText('关卡完成！', canvas.width/2, canvas.height/2 - 80);
+            } else {
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillText('游戏失败！', canvas.width/2, canvas.height/2 - 80);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.fillText(`目标分数: ${gameState.targetScore}`, canvas.width/2, canvas.height/2 - 40);
+                ctx.fillText(`还差: ${gameState.targetScore - gameState.score} 分`, canvas.width/2, canvas.height/2 - 10);
+            }
             
             ctx.font = '24px Arial';
-            ctx.fillText(`最终得分: ${gameState.score}`, canvas.width/2, canvas.height/2);
-            ctx.fillText(`达到关卡: ${gameState.level}`, canvas.width/2, canvas.height/2 + 40);
+            ctx.fillStyle = 'white';
+            ctx.fillText(`最终得分: ${gameState.score}`, canvas.width/2, canvas.height/2 + 30);
+            ctx.fillText(`达到关卡: ${gameState.level}`, canvas.width/2, canvas.height/2 + 70);
+            
+            // 显示重新开始按钮
+            if (gameState.score < gameState.targetScore) {
+                // 绘制按钮
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillRect(canvas.width/2 - 80, canvas.height/2 + 100, 160, 50);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.fillText('重新开始', canvas.width/2, canvas.height/2 + 130);
+                
+                // 添加点击事件
+                canvas.onclick = function(event) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = event.clientX - rect.left;
+                    const y = event.clientY - rect.top;
+                    
+                    // 检查是否点击了重新开始按钮
+                    if (x >= canvas.width/2 - 80 && x <= canvas.width/2 + 80 && 
+                        y >= canvas.height/2 + 100 && y <= canvas.height/2 + 150) {
+                        restartGame();
+                    }
+                };
+                
+                // 添加触摸事件支持
+                canvas.ontouchstart = function(event) {
+                    event.preventDefault();
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = event.touches[0];
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+                    
+                    // 检查是否点击了重新开始按钮
+                    if (x >= canvas.width/2 - 80 && x <= canvas.width/2 + 80 && 
+                        y >= canvas.height/2 + 100 && y <= canvas.height/2 + 150) {
+                        restartGame();
+                    }
+                };
+            }
+        }
+        
+        // 重新开始游戏
+        function restartGame() {
+            // 显示开始按钮
+            document.getElementById('startBtn').style.display = 'inline-block';
+            
+            // 清除事件
+            canvas.onclick = null;
+            canvas.ontouchstart = null;
+            
+            // 重新开始游戏
+            startGame();
         }
         
         // 开始游戏
@@ -616,12 +863,13 @@
                 timeLeft: 60,
                 hookAngle: 0,
                 hookDirection: 1,
-                hookSpeed: 2,
+                hookSpeed: 1.5,
                 hookLength: 50,
                 hookExtending: false,
                 hookRetracting: false,
                 hookMaxExtension: 550,
-                caughtItem: null
+                caughtItem: null,
+                isGameOver: false
             };
             
             hook.currentLength = gameState.hookLength;
@@ -629,11 +877,15 @@
             // 清空特效
             particles = [];
             scorePopups = [];
+            catchEffects = [];
             
             document.getElementById('level').textContent = gameState.level;
             document.getElementById('score').textContent = gameState.score;
             document.getElementById('target').textContent = gameState.targetScore;
             document.getElementById('time').textContent = gameState.timeLeft;
+            
+            // 隐藏开始按钮
+            document.getElementById('startBtn').style.display = 'none';
             
             initItems();
         }
@@ -652,13 +904,44 @@
                 e.preventDefault();
                 if (!gameState.hookExtending && !gameState.hookRetracting) {
                     gameState.hookExtending = true;
+                    // 按钮按下效果
+                    const hookBtn = document.getElementById('hookBtn');
+                    hookBtn.classList.add('pressed');
+                    setTimeout(() => hookBtn.classList.remove('pressed'), 200);
                 }
             }
         });
         
+        // 出钩子按钮事件
+        function launchHook() {
+            if (gameState.isRunning && !gameState.isPaused) {
+                if (!gameState.hookExtending && !gameState.hookRetracting) {
+                    gameState.hookExtending = true;
+                    // 按钮按下效果
+                    const hookBtn = document.getElementById('hookBtn');
+                    hookBtn.classList.add('pressed');
+                    setTimeout(() => hookBtn.classList.remove('pressed'), 200);
+                }
+            }
+        }
+        
         // 按钮事件
         document.getElementById('startBtn').addEventListener('click', startGame);
         document.getElementById('pauseBtn').addEventListener('click', pauseGame);
+        document.getElementById('hookBtn').addEventListener('click', launchHook);
+        
+        // 触摸事件支持
+        document.getElementById('hookBtn').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            launchHook();
+        });
+        
+        // 防止页面滚动
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.closest('.game-container')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
         
         // 计时器
         setInterval(updateTimer, 1000);
