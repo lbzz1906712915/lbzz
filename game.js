@@ -206,21 +206,68 @@ function initItems() {
 function drawMiner() {
     ctx.save();
     
-    // 矿工身体
-    ctx.fillStyle = '#8B4513';
-    ctx.fillRect(miner.x - miner.width/2, miner.y - miner.height/2, miner.width, miner.height);
+    // 矿工身体（更精细的设计）
+    ctx.fillStyle = '#4169E1'; // 深蓝色工作服
+    ctx.fillRect(miner.x - miner.width/2, miner.y - miner.height/2 + 10, miner.width, miner.height - 10);
+    
+    // 工作服细节
+    ctx.fillStyle = '#2C5282'; // 深色条纹
+    ctx.fillRect(miner.x - miner.width/2 + 5, miner.y - miner.height/2 + 15, 5, miner.height - 20);
+    ctx.fillRect(miner.x + miner.width/2 - 10, miner.y - miner.height/2 + 15, 5, miner.height - 20);
+    
+    // 工作服口袋
+    ctx.fillStyle = '#34495E';
+    ctx.fillRect(miner.x - miner.width/2 + 8, miner.y - miner.height/2 + 25, miner.width - 16, 15);
     
     // 矿工头部
-    ctx.fillStyle = '#FDBCB4';
+    ctx.fillStyle = '#FDBCB4'; // 肤色
     ctx.beginPath();
-    ctx.arc(miner.x, miner.y - miner.height/2 - 15, 15, 0, Math.PI * 2);
+    ctx.arc(miner.x, miner.y - miner.height/2 - 15, 12, 0, Math.PI * 2);
     ctx.fill();
     
-    // 安全帽
+    // 矿工面部特征
+    ctx.fillStyle = '#8B4513'; // 眉睛
+    ctx.beginPath();
+    ctx.arc(miner.x - 4, miner.y - miner.height/2 - 18, 2, 0, Math.PI * 2);
+    ctx.arc(miner.x + 4, miner.y - miner.height/2 - 18, 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 矿工微笑
+    ctx.strokeStyle = '#8B4513';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(miner.x, miner.y - miner.height/2 - 12, 6, 0, Math.PI);
+    ctx.stroke();
+    
+    // 安全帽（更立体）
     ctx.fillStyle = '#FFD700';
     ctx.beginPath();
     ctx.arc(miner.x, miner.y - miner.height/2 - 15, 15, Math.PI, 0);
     ctx.fill();
+    
+    // 安全帽高光
+    const helmetGradient = ctx.createLinearGradient(
+        miner.x - 15, miner.y - miner.height/2 - 25,
+        miner.x + 15, miner.y - miner.height/2 - 5
+    );
+    helmetGradient.addColorStop(0, '#FFEA00');
+    helmetGradient.addColorStop(1, '#FFD700');
+    ctx.fillStyle = helmetGradient;
+    ctx.beginPath();
+    ctx.arc(miner.x, miner.y - miner.height/2 - 15, 15, Math.PI, 0);
+    ctx.fill();
+    
+    // 安全帽徽章
+    ctx.fillStyle = '#FF6B35';
+    ctx.fillRect(miner.x - 5, miner.y - miner.height/2 - 20, 10, 3);
+    
+    // 手臂（持绳子的手臂）
+    ctx.fillStyle = '#FDBCB4';
+    ctx.fillRect(miner.x - 5, miner.y - miner.height/2 + 5, 10, 20);
+    
+    // 手套
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(miner.x - 6, miner.y - miner.height/2 + 20, 12, 8);
     
     ctx.restore();
 }
@@ -258,31 +305,71 @@ function drawHookLine() {
     hook.y = endY;
     
     if (!gameState.caughtItem) {
-        // 绘制小矿工代替球体，纠正摆动方向
+        // 绘制精细的矿工小人
         ctx.save();
         ctx.translate(hook.x, hook.y);
         ctx.rotate(-angleRad); // 反转角度，让矿工身体垂直向下
         
-        // 矿工身体
+        // 矿工身体（缩小版）
         ctx.fillStyle = '#4169E1'; // 蓝色工作服
-        ctx.fillRect(-8, -5, 16, 12);
+        ctx.fillRect(-6, -4, 12, 10);
+        
+        // 工作服细节
+        ctx.fillStyle = '#2C5282'; // 深色条纹
+        ctx.fillRect(-4, -2, 3, 6);
+        ctx.fillRect(1, -2, 3, 6);
         
         // 矿工头部
         ctx.fillStyle = '#FDBCB4'; // 肤色
         ctx.beginPath();
-        ctx.arc(0, -10, 6, 0, Math.PI * 2);
+        ctx.arc(0, -8, 5, 0, Math.PI * 2);
         ctx.fill();
         
-        // 安全帽
+        // 矿工面部特征
+        ctx.fillStyle = '#8B4513'; // 眼睛
+        ctx.beginPath();
+        ctx.arc(-2, -10, 1.5, 0, Math.PI * 2);
+        ctx.arc(2, -10, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 矿工微笑
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(0, -6, 3, 0, Math.PI);
+        ctx.stroke();
+        
+        // 安全帽（缩小版）
         ctx.fillStyle = '#FFD700'; // 金色安全帽
         ctx.beginPath();
-        ctx.arc(0, -10, 6, Math.PI, 0);
+        ctx.arc(0, -8, 5, Math.PI, 0);
         ctx.fill();
         
-        // 连接点（移除钩子，只保留连接点）
+        // 安全帽高光
+        const helmetGradient = ctx.createLinearGradient(0, -13, 0, -3);
+        helmetGradient.addColorStop(0, '#FFEA00');
+        helmetGradient.addColorStop(1, '#FFD700');
+        ctx.fillStyle = helmetGradient;
+        ctx.beginPath();
+        ctx.arc(0, -8, 5, Math.PI, 0);
+        ctx.fill();
+        
+        // 安全帽徽章
+        ctx.fillStyle = '#FF6B35'; // 橴色徽章
+        ctx.fillRect(-3, -13, 6, 2);
+        
+        // 手臂
+        ctx.fillStyle = '#FDBCB4'; // 肤色
+        ctx.fillRect(-3, 2, 6, 8);
+        
+        // 手套
+        ctx.fillStyle = '#8B4513'; // 深色手套
+        ctx.fillRect(-4, 8, 8, 6);
+        
+        // 连接点
         ctx.fillStyle = '#8B4513'; // 与绳子同色
         ctx.beginPath();
-        ctx.arc(0, 8, 3, 0, Math.PI * 2);
+        ctx.arc(0, 6, 2, 0, Math.PI * 2);
         ctx.fill();
         
         ctx.restore();
@@ -296,7 +383,6 @@ function drawItems() {
     items.forEach(item => {
         if (!item.caught || (item.caught && item === gameState.caughtItem)) {
             ctx.save();
-            ctx.fillStyle = item.color;
             
             let drawX = item.x;
             let drawY = item.y;
@@ -309,25 +395,123 @@ function drawItems() {
             
             if (item.type === 'diamond') {
                 // 绘制钻石
+                ctx.save();
+                ctx.translate(drawX, drawY);
+                
+                // 钻石主体
+                ctx.fillStyle = '#00FFFF';
                 ctx.beginPath();
-                ctx.moveTo(drawX, drawY - item.size/2);
-                ctx.lineTo(drawX + item.size/2, drawY);
-                ctx.lineTo(drawX, drawY + item.size/2);
-                ctx.lineTo(drawX - item.size/2, drawY);
+                ctx.moveTo(0, -item.size/2);
+                ctx.lineTo(item.size/2, 0);
+                ctx.lineTo(0, item.size/2);
+                ctx.lineTo(-item.size/2, 0);
                 ctx.closePath();
                 ctx.fill();
-            } else {
-                // 绘制圆形物品
+                
+                // 钻石光泽
+                const gradient = ctx.createLinearGradient(-item.size/2, -item.size/2, item.size/2, item.size/2);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(0, 255, 255, 0.1)');
+                ctx.fillStyle = gradient;
                 ctx.beginPath();
-                ctx.arc(drawX, drawY, item.size/2, 0, Math.PI * 2);
+                ctx.moveTo(0, -item.size/2);
+                ctx.lineTo(item.size/2, 0);
+                ctx.lineTo(0, item.size/2);
+                ctx.lineTo(-item.size/2, 0);
+                ctx.closePath();
                 ctx.fill();
+                
+                // 钻石闪光
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, -item.size/2);
+                ctx.lineTo(item.size/2, 0);
+                ctx.lineTo(0, item.size/2);
+                ctx.lineTo(-item.size/2, 0);
+                ctx.closePath();
+                ctx.stroke();
+                
+                ctx.restore();
+            } else if (item.type.includes('gold')) {
+                // 绘制金块，增加立体感
+                ctx.save();
+                ctx.translate(drawX, drawY);
+                
+                // 金块主体
+                ctx.fillStyle = item.color;
+                ctx.beginPath();
+                ctx.arc(0, 0, item.size/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 金块光泽
+                const gradient = ctx.createRadialGradient(-item.size/4, -item.size/4, 0, 0, 0, item.size/2);
+                gradient.addColorStop(0, 'rgba(255, 255, 224, 0.8)');
+                gradient.addColorStop(0.3, 'rgba(255, 255, 224, 0.4)');
+                gradient.addColorStop(1, 'rgba(255, 215, 0, 0.2)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(0, 0, item.size/2 * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 金块边缘高光
+                ctx.strokeStyle = 'rgba(255, 255, 224, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, 0, item.size/2 - 1, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 金块内部纹理
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, item.size/2 - i * 5, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            } else {
+                // 绘制石头
+                ctx.save();
+                ctx.translate(drawX, drawY);
+                
+                // 石头主体
+                ctx.fillStyle = item.color;
+                ctx.beginPath();
+                ctx.arc(0, 0, item.size/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 石头纹理
+                ctx.fillStyle = 'rgba(105, 105, 105, 0.3)';
+                ctx.beginPath();
+                ctx.arc(-item.size/6, -item.size/6, item.size/6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(item.size/6, item.size/6, item.size/6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(0, item.size/4, item.size/8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 石头边缘
+                ctx.strokeStyle = 'rgba(64, 64, 64, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, 0, item.size/2 - 1, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                ctx.restore();
             }
             
             // 只为未被抓取的物品显示价值
             if (!item.caught) {
                 ctx.fillStyle = 'white';
-                ctx.font = '12px Arial';
+                ctx.font = 'bold 12px Arial';
                 ctx.textAlign = 'center';
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.strokeText('$' + item.value, item.x, item.y);
                 ctx.fillText('$' + item.value, item.x, item.y);
             }
             
@@ -572,12 +756,12 @@ function updateGame() {
     
     // 检查是否所有物品被抓完
     const availableItems = items.filter(item => !item.caught);
-    console.log('可用物品数量:', availableItems.length, '总物品数量:', items.length);
     
-    if (availableItems.length === 0 && items.length > 0) {
-        console.log('所有物品已抓完，进入下一关');
-        // 物品全部抓完，直接进入下一关
-        nextLevel();
+    if (availableItems.length === 0 && items.length > 0 && !gameState.levelSuccess) {
+        console.log('所有物品已抓完，显示闯关成功界面');
+        // 物品全部抓完，显示闯关成功界面
+        gameState.levelSuccess = true;
+        gameState.isGameOver = true;
         return;
     }
     
@@ -636,7 +820,7 @@ function updateScore() {
 
 // 更新时间
 function updateTimer() {
-    if (gameState.isRunning && !gameState.isPaused) {
+    if (gameState.isRunning && !gameState.isPaused && !gameState.levelSuccess) {
         gameState.timeLeft--;
         document.getElementById('time').textContent = gameState.timeLeft;
         
@@ -644,7 +828,7 @@ function updateTimer() {
             // 确保游戏结束逻辑正确执行
             if (!gameState.isGameOver) {
                 gameState.isGameOver = true;
-                gameOver();
+                // 不调用gameOver()，避免重复设置
             }
         }
     }
@@ -678,8 +862,28 @@ function drawGameOverScreen() {
     
     let showButtons = false;
     
-    // 判断是否达标
-    if (gameState.score >= gameState.targetScore) {
+    // 判断是否闯关成功
+    if (gameState.levelSuccess) {
+        // 闯关成功界面
+        ctx.fillStyle = '#f39c12';
+        ctx.fillText('闯关成功！', canvas.width/2, canvas.height/2 - 120);
+        
+        // 绘制庆祝星星
+        for (let i = 0; i < 5; i++) {
+            ctx.fillStyle = '#FFD700';
+            ctx.font = '36px Arial';
+            const starX = canvas.width/2 - 120 + i * 60;
+            const starY = canvas.height/2 - 70;
+            ctx.fillText('⭐', starX, starY);
+        }
+        
+        ctx.fillStyle = 'white';
+        ctx.font = '24px Arial';
+        ctx.fillText(`第 ${gameState.level} 关完成！`, canvas.width/2, canvas.height/2 - 20);
+        ctx.fillText(`获得分数: ${gameState.score}`, canvas.width/2, canvas.height/2 + 20);
+        
+        showButtons = true;
+    } else if (gameState.score >= gameState.targetScore) {
         ctx.fillStyle = '#2ecc71';
         if (gameState.timeLeft <= 0) {
             ctx.fillText('通关成功！', canvas.width/2, canvas.height/2 - 80);
@@ -702,17 +906,19 @@ function drawGameOverScreen() {
     
     ctx.font = '24px Arial';
     ctx.fillStyle = 'white';
-    ctx.fillText(`最终得分: ${gameState.score}`, canvas.width/2, canvas.height/2 + 30);
-    ctx.fillText(`达到关卡: ${gameState.level}`, canvas.width/2, canvas.height/2 + 70);
+    if (!gameState.levelSuccess) {
+        ctx.fillText(`最终得分: ${gameState.score}`, canvas.width/2, canvas.height/2 + 30);
+        ctx.fillText(`达到关卡: ${gameState.level}`, canvas.width/2, canvas.height/2 + 70);
+    }
     
-    // 显示按钮（仅在时间结束后或失败时）
+    // 显示按钮（仅在闯关成功、时间结束后或失败时）
     if (showButtons) {
         // 清除之前的事件
         canvas.onclick = null;
         canvas.ontouchstart = null;
         
-        if (gameState.score >= gameState.targetScore) {
-            // 通关成功：下一关按钮
+        if (gameState.levelSuccess || gameState.score >= gameState.targetScore) {
+            // 闯关成功：下一关按钮
             ctx.fillStyle = '#27ae60';
             ctx.fillRect(canvas.width/2 - 80, canvas.height/2 + 100, 160, 50);
             ctx.fillStyle = 'white';
@@ -797,6 +1003,7 @@ function nextLevel() {
     gameState.timeLeft = 60; // 每关固定1分钟
     gameState.hookSpeed = Math.min(1.5 + gameState.level * 0.15, 3.5); // 钩子速度递增更慢
     gameState.levelCompleted = false; // 重置关卡完成标志
+    gameState.levelSuccess = false; // 重置闯关成功标志
     gameState.isGameOver = false; // 重置游戏结束标志
     gameState.isRunning = true; // 直接开始游戏
     
@@ -840,7 +1047,8 @@ function startGame() {
         hookMaxExtension: 550,
         caughtItem: null,
         isGameOver: false,
-        levelCompleted: false // 新增关卡完成标志
+        levelCompleted: false, // 新增关卡完成标志
+        levelSuccess: false // 新增闯关成功标志
     };
     
     hook.currentLength = gameState.hookLength;
