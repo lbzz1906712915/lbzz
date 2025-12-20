@@ -1,0 +1,236 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Arial', sans-serif;
+}
+
+.game-container {
+    background: #2c3e50;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.game-header {
+    color: #ecf0f1;
+    margin-bottom: 20px;
+}
+
+.game-header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #ecf0f1;
+}
+
+.stat {
+    background: #34495e;
+    padding: 10px 20px;
+    border-radius: 10px;
+    min-width: 120px;
+}
+
+.stat-label {
+    font-weight: bold;
+    color: #bdc3c7;
+}
+
+.stat-value {
+    color: #f39c12;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+canvas {
+    border: 3px solid #ecf0f1;
+    border-radius: 10px;
+    background: #87CEEB;
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    touch-action: none;
+    width: 1000px;
+    height: 600px;
+}
+
+@media (max-width: 1200px) {
+    canvas {
+        width: 900px;
+        height: 540px;
+    }
+}
+
+@media (max-width: 1000px) {
+    canvas {
+        width: 800px;
+        height: 480px;
+    }
+}
+
+@media (max-width: 768px) {
+    canvas {
+        width: 100%;
+        height: auto;
+        border-width: 2px;
+    }
+}
+
+.game-controls {
+    margin-top: 20px;
+}
+
+.btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1em;
+    border-radius: 25px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.hook-button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 1.2em;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0 10px;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    vertical-align: middle;
+}
+
+.hook-button:hover {
+    background: #2980b9;
+    transform: scale(1.05);
+}
+
+.hook-button:active {
+    transform: scale(0.95);
+    background: #21618c;
+}
+
+.hook-button.pressed {
+    background: #e74c3c;
+    transform: scale(0.9);
+}
+
+.instructions {
+    color: #ecf0f1;
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+.game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    display: none;
+}
+
+.game-over h2 {
+    margin-top: 0;
+    color: #e74c3c;
+}
+
+@media (max-width: 768px) {
+    .game-container {
+        padding: 10px;
+        margin: 10px;
+    }
+    
+    .game-header h1 {
+        font-size: 1.8em;
+    }
+    
+    .game-stats {
+        font-size: 0.9em;
+    }
+    
+    .stat {
+        padding: 8px 15px;
+        min-width: 80px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        font-size: 1em;
+        margin: 5px;
+    }
+    
+    canvas {
+        border-width: 2px;
+    }
+    
+    .hook-button {
+        width: 50px;
+        height: 50px;
+        padding: 10px;
+        margin: 0 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-header h1 {
+        font-size: 1.5em;
+    }
+    
+    .game-stats {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .stat {
+        min-width: 70px;
+        padding: 5px 10px;
+    }
+    
+    .hook-button {
+        width: 45px;
+        height: 45px;
+        padding: 8px;
+        margin: 0 3px;
+    }
+}

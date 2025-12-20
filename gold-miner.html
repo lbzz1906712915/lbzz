@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黄金矿工 - HTML5游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header" style="display: none;">
+            <h1>黄金矿工</h1>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat">
+                <div class="stat-label">关卡</div>
+                <div class="stat-value" id="level">1</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">分数</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">目标</div>
+                <div class="stat-value" id="target">500</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">时间</div>
+                <div class="stat-value" id="time">60</div>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+        
+        <div class="game-controls">
+            <button class="btn" id="startBtn">开始游戏</button>
+            <button class="btn" id="pauseBtn">暂停</button>
+            <button class="hook-button" id="hookBtn">⛏️</button>
+        </div>
+        
+        <div class="instructions">
+            <p>按空格键或点击下方按钮发射钩子 | 抓取金块和钻石获得分数 | 避开石头</p>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
