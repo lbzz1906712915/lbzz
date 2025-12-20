@@ -63,6 +63,30 @@ canvas {
     max-width: 100%;
     height: auto;
     touch-action: none;
+    width: 1000px;
+    height: 600px;
+}
+
+@media (max-width: 1200px) {
+    canvas {
+        width: 900px;
+        height: 540px;
+    }
+}
+
+@media (max-width: 1000px) {
+    canvas {
+        width: 800px;
+        height: 480px;
+    }
+}
+
+@media (max-width: 768px) {
+    canvas {
+        width: 100%;
+        height: auto;
+        border-width: 2px;
+    }
 }
 
 .game-controls {
